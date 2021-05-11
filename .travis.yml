@@ -1,0 +1,22 @@
+sudo: required 
+services:
+  - docker
+
+before_install:
+  - docker build -t onurbasar/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+  - docker run -e CI=true onurbasar/react-test npm test
+
+after_success:
+  - docker build -t onurbasar/multi-client ./client
+  - docker build -t onurbasar/multi-nginx ./nginx
+  - docker build -t onurbasar/multi-server ./server
+  - docker build -t onurbasar/multi-worker ./worker
+
+  - echo "$docker-password" | docker login -u "$docker-id" --password-stdin
+  - docker push onurbasar/multi-client
+  - docker push onurbasar/multi-nginx
+  - docker push onurbasar/multi-server
+  - docker push onurbasar/multi-worker
+
