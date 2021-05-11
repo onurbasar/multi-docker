@@ -4,6 +4,7 @@ services:
   - docker
 
 before_install:
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
   - docker build -t onurbasar/react-test -f ./client/Dockerfile.dev ./client
 
 script:
@@ -15,7 +16,6 @@ after_success:
   - docker build -t onurbasar/multi-server ./server
   - docker build -t onurbasar/multi-worker ./worker
 
-  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
   - docker push onurbasar/multi-client
   - docker push onurbasar/multi-nginx
   - docker push onurbasar/multi-server
